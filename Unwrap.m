@@ -11,7 +11,7 @@ clear all; clc
 %im = imread('45DegGridHalfInch.tif');
 %imOriginal = imread('45DegDiamond_f1_6.tiff');
 
-imOriginal = imread('Diamond_45_f4.tiff');
+imOriginal = imread('55_Deg_3_Image169.tif');
 
 im = imOriginal;
 level = graythresh(im);
