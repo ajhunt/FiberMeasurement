@@ -8,7 +8,7 @@ imThreshold = image;
 imThreshold(image>170) = 0;
 
 count = 1;
-yIncrement = 130;
+yIncrement = 100;
 [sizeY, sizeX] = size(image);
 i = 100;
 while i < sizeY-1500
