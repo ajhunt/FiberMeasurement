@@ -22,6 +22,6 @@ end
 
 leftBoundary = round(mean(leftBound));
 rightBoundary = round(mean(rightBound));
-centerLine = (rightBoundary + leftBoundary)/2;
+centerLine = round((rightBoundary + leftBoundary)/2);
 braidWidth = rightBoundary - leftBoundary;
 end

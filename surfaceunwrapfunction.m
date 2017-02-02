@@ -1,12 +1,12 @@
-function [ unwrapIm, imInterp] = surfaceunwrapfunction( im, leftBoundary, rightBoundary, centerLine )
+function [ unwrapIm] = surfaceunwrapfunction( im, leftBoundary, rightBoundary, centerLine )
 %applied orthographic projection to images of the tubular braid surface
 
 %inputs: im = input image, leftBoundary, rightBoundary, centerLine =
 %feature locations in image, braidDiameter = mandrel diameter of braid in
 %either mm or inches, unit = 0 for imperial, 1 for metric
 
-braidDiameterPX = rightBoundary - leftBoundary;  %braid diameter in pixels
-
+braidDiameterPX = round(rightBoundary) - round(leftBoundary);  %braid diameter in pixels
+braidRadiusPX = round(braidDiameterPX/2);
 [sizeY,sizeX] = size(im);
 
 im(:,(1:leftBoundary)) = 0;
@@ -19,24 +19,23 @@ imMap = uint8(zeros(sizeY,sizeX+padSize));
 
 %Pixel re-mapping
 for i = 1:round(braidDiameterPX/2)
-    arclength(i) = asin(i/round(braidDiameterPX/2))*round(braidDiameterPX/2);
+    arclength(i) = asin(i/braidRadiusPX)*braidRadiusPX; %arclength = theta*r
 end
 
 %Define the amount of unwrapping as a function of distance from centerline
-x = 1:round(braidDiameterPX/2);
+x = 1:braidRadiusPX;
 unWrap = real(round(arclength-x));
-
 
 %looping through the columns on the right side of the braid centerline
 
 count = 1;
-for i = round(centerLine+1):1:round(mean(rightBoundary))
+for i = centerLine+1:1:rightBoundary
     imMap(:,i+unWrap(count)+padSize) = im(:,i);
     count = count+1;
 end
 
 count = 1;
-for j = round(centerLine-1):-1:round(mean(leftBoundary))
+for j = centerLine-1:-1:leftBoundary
     imMap(:,j-unWrap(count)+padSize) = im(:,j);
     count = count+1;
 end
@@ -64,12 +63,12 @@ for i = size(im,2)+padSize:-1:padSize
 end
 
 %resize mapped image
-imMap2 = imMap(:,[leftIndex:rightIndex]);
+imMapResize = imMap(:,[leftIndex:rightIndex]);
 %locate columns containing image data
 count = 1;
 dataArray = [];
-for i = 1:size(imMap2,2)
-    if imMap2(1,i) == 0
+for i = 1:size(imMapResize,2)
+    if imMapResize(1,i) == 0
         continue
     else
        dataArray(count) = i; %stores column values which contain image data
@@ -78,19 +77,19 @@ for i = 1:size(imMap2,2)
 end
 
 %interpolating gaps in unwrapped image
-ind = find(imMap2); %finding the linear indices of the non-zero pixels 
-s = size(imMap2); %defining the size of the image matrix
+ind = find(imMapResize); %finding the linear indices of the non-zero pixels 
+s = size(imMapResize); %defining the size of the image matrix
 [I,J] = ind2sub(s,ind); %vectors containing pixel coordinates of non-zero pixels
 
 for i = 1:length(I)
-    V(i) = double(imMap2(I(i),J(i)));
+    V(i) = double(imMapResize(I(i),J(i)));
 end
 V = V';
 F = scatteredInterpolant(J,I,V);
 %defining query points
 
 %finding locations of zero value in remapped image
-indQuery = find(not(imMap2)); %linear indices of zero locations
+indQuery = find(not(imMapResize)); %linear indices of zero locations
 [Iq, Jq] = ind2sub(s,indQuery); 
 queryPoints = horzcat(Jq,Iq); %making data points in form of x,y
 
@@ -98,12 +97,10 @@ queryPoints = horzcat(Jq,Iq); %making data points in form of x,y
 Vq = F(queryPoints);
 
 %replace regions of missing data in image with interpolated values
-imInterp = imMap2;
+unwrapIm = imMapResize;
 for i = 1:length(Vq)
-   imInterp(Iq(i), Jq(i)) = Vq(i); 
+   inwrapIm(Iq(i), Jq(i)) = Vq(i); 
 end
-
-unwrapIm = imMap2;
 
 end
 
