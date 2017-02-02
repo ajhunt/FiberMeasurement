@@ -21,3 +21,5 @@ bw=im2bw(sIM,0);
 %median filter to remove salt and pepper noise
 bw = medfilt2(bw, [med med]);
 end
+
+%Test comment
