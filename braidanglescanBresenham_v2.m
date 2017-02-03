@@ -121,17 +121,11 @@ descendingCircArrayBottom = ascendingCircArrayBottom(order2,:);
 %Replace the removed second half of the values
 sortedCirclePoints(halfSize:end, :) = descendingCircArrayBottom;
 %------------------------------------------------------------------------
-
-%END OF OLD CIRCLEPOINT CODE--------------------------------------------
-
-%Allocating space for storing the resulting mean pixel intensities and
-%angle increments
-% intensity = zeros(1,nRow);
-% angle = zeros(1,nRow);
 intensity = [];
 angle = [];
 count = 0; %counter variable initialization
 
+%%
 %ANGLE MEASUREMENT AND LINE DISCRETIZATION ---------------------
 %In this section of code, lines are drawn from the center of the image to
 %pixels lying on the perimeter of the discretized semi-circle.  The average
@@ -170,7 +164,7 @@ for j = 1:size(sortedCirclePoints, 1)
         
     else %Run main line drawing algorithm which is diveded into cases of large, small, positve and negative slopes
         
-        [ xLine, yLine ] = discretelinefunction( center, m, xa, ya, xb, yb );
+        [ xLine, yLine ] = discretelinefunction( center, m, xa, ya, xb, yb ); %function takes center and line end points as inputs and outputs discrete line
         
     end
     pixelValues = zeros([1,size(xLine,2)]);
@@ -180,9 +174,7 @@ for j = 1:size(sortedCirclePoints, 1)
     %Loops through the coordinateVector obtained from generating the
     %discretized lines and determines the coresponding pixel values
     %assicoated with the x,y coordinates
-    
-    
-    
+        
     %Defines the mean pixel intensity and the angle for each vector
     
     intensity(count) = mean(pixelValues);
@@ -191,12 +183,7 @@ for j = 1:size(sortedCirclePoints, 1)
     
 end
 
-%Normalize the array of mean pixel intensities by subtracting the minimum
-%value
-%intensity = intensity - min(intensity);
-
-
-
+%designate left angles and negative
 for i = ((count)+3)/2:count
     angle(i) = angle(i)*-1;
 end
@@ -208,7 +195,7 @@ thetaLeft = 0;
 intensityLeft = 0;
 intensityRight = 0;
 
-% Scanning for the LEFT braid angle
+% Scanning for the Left braid angle
 for i = 1:count/2
     if intensity(i) > intensityLeft && 20 < angle(i) && angle(i) < 70
         intensityLeft = intensity(i);
@@ -233,7 +220,7 @@ end
 
 %Taking the average of the left and right angles
 braidAngle = (abs(thetaLeft)+abs(thetaRight))/2;
-
+%%
 % %graphically show lines of max intensity overtop of the frequency spectrum
 % h = figure;
 % %axis(h,'equal')
@@ -258,23 +245,7 @@ for j = indLeft:size(intensity, 2)/2
     end
 end
 
-% for j = indLeft:-1:1
-%    if intensity(j)-min(intensity)<= (intensityLeft-min(intensity))*angleBand
-%        leftBand(2) = -1*angle(j);
-%        break
-%    end
-% end
-
 leftAngleDistribution = abs(abs(leftBand(1))-abs(thetaLeft));
-
-
-%Angular distribution of the right braid angle
-% for j = indRight:size(intensity, 2)
-%     if intensity(j)-min(intensity)<= (intensityRight-min(intensity))*angleBand
-%         rightBand(1) = angle(j);
-%         break
-%     end
-% end
 
 for j = indRight:-1:size(intensity, 2)/2
     if intensity(j)-min(intensity)<= (intensityRight-min(intensity))*angleBand
@@ -282,7 +253,6 @@ for j = indRight:-1:size(intensity, 2)/2
         break
     end
 end
-
 
 rightAngleDistribution = abs(abs(rightBand(1)) - abs(thetaRight));
 
