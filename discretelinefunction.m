@@ -8,7 +8,6 @@ if m > 1 %Large positive slope
     error(1) = 1/m;
     xLine(1) = center(2);
     yLine(1) = center(1);
-    q = 1;
     for i = 1:(yb)-center(1)
         
         if xLine(i) + error(i) < xLine(i) + 0.5
@@ -35,7 +34,7 @@ elseif m<=1 && m>0 %Small positive slope
     error(1) = m;
     xLine(1) = center(2);
     yLine(1) = center(1);
-    q = 1;
+    
     
     for i = 1:xb-(center(2)+1)
         %y value is not incremented
@@ -62,7 +61,7 @@ elseif m<-1  %Large negative slope
     error(1) = 1/m;
     xLine(1) = center(2);
     yLine(1) = center(1);
-    q = 1;
+    
     
     for i = 1:center(1)-(yb+1)
         %x value is not incremented
@@ -88,7 +87,7 @@ else %Small negative slope (between 0 and -1 inc)
     error(1) = m;
     xLine(1) = center(2);
     yLine(1) = center(1);
-    q = 1;
+    
     
     for i = 1:xb-(center(2)+1)
         %y value is not incremented
