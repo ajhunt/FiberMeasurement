@@ -9,9 +9,9 @@
 %Written by Alexander Hunt, ajhunt@ualberta.ca
 %Updated Nov 11, 2016
 %Fixed angle band computation and added a radius reduction input (radiusReduction) which
-%shrinks the size of the search radius of the algorithm.  
+%shrinks the size of the search radius of the algorithm.
 %Updated Sept 7, 2016
-%Corrected improper labelling of left and right spectral features.  
+%Corrected improper labelling of left and right spectral features.
 %Updated Aug 29, 2016
 %Removed intensity value normalization to allow for comparison between data
 %sets.  The plot functions will plot the uncorrected values of intensity,
@@ -19,7 +19,7 @@
 %Updated May 2, 2016
 %Modified segment of code which defines the angle vector.  The 0 degree
 %angle was sandwiched between two positive angles which caused repeating x
-%values.  Ensured that all x values are now unique.  
+%values.  Ensured that all x values are now unique.
 %Updated April 14th, 2015
 %Updates include defining a circle which is marched across to define the
 %angle measurement vector.  This eliminates the need to have a square
@@ -39,12 +39,12 @@
 
 %Updated July 2nd, 2015
 %Added the Bresenham circle algorithm which will properly discretize the
-%circular path over which the measurement is performed.  
+%circular path over which the measurement is performed.
 
 %Updated October 30, 2015
 %Added direction vector output to allow for graphical representation of
 %measured angle on frequency domain output.  And for other potential uses.
-%Added indRight and indLeft outputs 
+%Added indRight and indLeft outputs
 
 %Updated November 1, 2015
 %Added sortedCirclePoints to the output of the function to add annotations
@@ -92,7 +92,7 @@ ref = [nRow,center(1)] - [center(2), center(1)];
 %NEW CIRCLEPOINT CODE-----------------------------------------------
 %Circle coordinates are ordered from the top center of the image to the
 %bottom center of the image
-radiusMax = center(1)-2-radiusReduction; 
+radiusMax = center(1)-2-radiusReduction;
 
 circleArray = MidpointCircle(0, radiusMax, center(1)-1, center(2)-1, 1); %Function will populate the array with circle points using the Bresenham circle algorithm
 
@@ -106,7 +106,7 @@ sortedCirclePoints = circPoints(order,:);
 %% plot circle points on frequency spectrum
 % circlePlotFreqSpectrum = edgeBraidFreqSpectrum;
 % circlePlotFreqSpectrum(sub2ind(size(circlePlotFreqSpectrum), sortedCirclePoints(:,1), sortedCirclePoints(:,2)))=1;
-% 
+%
 % imshow(circlePlotFreqSpectrum)
 %%
 %determine the number of circle points and remove the bottom half of the
@@ -118,7 +118,7 @@ ascendingCircArrayBottom = sortedCirclePoints(halfSize:end, :);
 [value2, order2]  = sort(ascendingCircArrayBottom(:,2), 'descend');
 descendingCircArrayBottom = ascendingCircArrayBottom(order2,:);
 
-%Replace the removed second half of the values 
+%Replace the removed second half of the values
 sortedCirclePoints(halfSize:end, :) = descendingCircArrayBottom;
 %------------------------------------------------------------------------
 
@@ -137,7 +137,7 @@ count = 0; %counter variable initialization
 %pixels lying on the perimeter of the discretized semi-circle.  The average
 %pixel intensity of the entries along the line is computer.  The
 %orientation of the line corresponding to the greatest intensity value is
-%saved as the braid angle.  
+%saved as the braid angle.
 
 %Marching along the circle points
 for j = 1:size(sortedCirclePoints, 1)
@@ -170,129 +170,136 @@ for j = 1:size(sortedCirclePoints, 1)
         
     else %Run main line drawing algorithm which is diveded into cases of large, small, positve and negative slopes
         
-        if m > 1 %Large positive slope            
-            %Defining starting point on line and initial error value
-            error(1) = 1/m;
-            x(1) = center(2);
-            y(1) = center(1);
-            q = 1;
-            for i = 1:(yb)-center(1) 
-                
-                if x(i) + error(i) < x(i) + 0.5
-                    %x value is not incremented
-                    y(i+1) = y(i) + 1;
-                    x(i+1) = x(i);
-                    
-                    error(i+1) = error(i)+1/m;
-                else
-                    %x value is incremented
-                    y(i+1) = y(i) + 1;
-                    x(i+1) = x(i) + 1;
-                    
-                    error(i+1) = error(i)+1/m-1;
-                    
-                end
-                pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
-                q = q+1;
-            end
-                     
-             %str = 'LP'
-            
-        elseif m<=1 && m>0 %Small positive slope
-            %Defining starting point
-            error(1) = m;
-            x(1) = center(2);
-            y(1) = center(1);
-            q = 1;
-            
-            for i = 1:xb-(center(2)+1)
-                %y value is not incremented
-                if y(i) + error(i) < y(i) + 0.5
-                    x(i+1) = x(i) + 1;
-                    y(i+1) = y(i);
-                    
-                    error(i+1) = error(i)+m;
-                else
-                    %y value is incremented
-                    x(i+1) = x(i) + 1;
-                    y(i+1) = y(i) + 1;
-                    
-                    error(i+1) = error(i) + m - 1;
-                end
-                pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
-                q = q+1;
-            end
-            
-          
-             %str = 'SP'
-            
-        elseif m<-1  %Large negative slope
-            
-            error(1) = 1/m;
-            x(1) = center(2);
-            y(1) = center(1);
-            q = 1;
-            
-            for i = 1:center(1)-(yb+1)
-                %x value is not incremented
-                if error(i) > -0.5
-                    y(i+1) = y(i) + 1;
-                    x(i+1) = x(i);
-                    
-                    error(i+1) = error(i)+1/m;
-                else
-                    %y value is not incremented
-                    y(i+1) = y(i) + 1;
-                    x(i+1) = x(i) - 1;
-                    
-                    error(i+1) = error(i)+1/m + 1;
-                end
-                pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
-                q = q+1;
-            end
-            
-            
-             %str = 'LN'
-            
-        else %Small negative slope (between 0 and -1 inc)
-            error(1) = m;
-            x(1) = center(2);
-            y(1) = center(1);
-            q = 1;
-            
-            for i = 1:xb-(center(2)+1)
-                %y value is not incremented
-                if error(i) > -0.5
-                    x(i+1) = x(i) + 1;
-                    y(i+1) = y(i);
-                    
-                    error(i+1) = error(i) + m;
-                else
-                    %y value is incremented (reduced)
-                    x(i+1) = x(i) + 1;
-                    y(i+1) = y(i) - 1;
-                    
-                    error(i+1) = error(i)+ m + 1;
-                end
-                pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
-                q = q+1;
-            end
-            
-            
-             %str = 'SN'
-        end
+        [ xLine, yLine ] = discretelinefunction( center, m, xa, ya, xb, yb );
+        
+        
+        
+        %         if m > 1 %Large positive slope
+        %             %Defining starting point on line and initial error value
+        %             error(1) = 1/m;
+        %             x(1) = center(2);
+        %             y(1) = center(1);
+        %             q = 1;
+        %             for i = 1:(yb)-center(1)
+        %
+        %                 if x(i) + error(i) < x(i) + 0.5
+        %                     %x value is not incremented
+        %                     y(i+1) = y(i) + 1;
+        %                     x(i+1) = x(i);
+        %
+        %                     error(i+1) = error(i)+1/m;
+        %                 else
+        %                     %x value is incremented
+        %                     y(i+1) = y(i) + 1;
+        %                     x(i+1) = x(i) + 1;
+        %
+        %                     error(i+1) = error(i)+1/m-1;
+        %
+        %                 end
+        %                 pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
+        %                 q = q+1;
+        %             end
+        %
+        %              %str = 'LP'
+        %
+        %         elseif m<=1 && m>0 %Small positive slope
+        %             %Defining starting point
+        %             error(1) = m;
+        %             x(1) = center(2);
+        %             y(1) = center(1);
+        %             q = 1;
+        %
+        %             for i = 1:xb-(center(2)+1)
+        %                 %y value is not incremented
+        %                 if y(i) + error(i) < y(i) + 0.5
+        %                     x(i+1) = x(i) + 1;
+        %                     y(i+1) = y(i);
+        %
+        %                     error(i+1) = error(i)+m;
+        %                 else
+        %                     %y value is incremented
+        %                     x(i+1) = x(i) + 1;
+        %                     y(i+1) = y(i) + 1;
+        %
+        %                     error(i+1) = error(i) + m - 1;
+        %                 end
+        %                 pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
+        %                 q = q+1;
+        %             end
+        %
+        %
+        %              %str = 'SP'
+        %
+        %         elseif m<-1  %Large negative slope
+        %
+        %             error(1) = 1/m;
+        %             x(1) = center(2);
+        %             y(1) = center(1);
+        %             q = 1;
+        %
+        %             for i = 1:center(1)-(yb+1)
+        %                 %x value is not incremented
+        %                 if error(i) > -0.5
+        %                     y(i+1) = y(i) + 1;
+        %                     x(i+1) = x(i);
+        %
+        %                     error(i+1) = error(i)+1/m;
+        %                 else
+        %                     %y value is not incremented
+        %                     y(i+1) = y(i) + 1;
+        %                     x(i+1) = x(i) - 1;
+        %
+        %                     error(i+1) = error(i)+1/m + 1;
+        %                 end
+        %                 pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
+        %                 q = q+1;
+        %             end
+        %
+        %
+        %              %str = 'LN'
+        %
+        %         else %Small negative slope (between 0 and -1 inc)
+        %             error(1) = m;
+        %             x(1) = center(2);
+        %             y(1) = center(1);
+        %             q = 1;
+        %
+        %             for i = 1:xb-(center(2)+1)
+        %                 %y value is not incremented
+        %                 if error(i) > -0.5
+        %                     x(i+1) = x(i) + 1;
+        %                     y(i+1) = y(i);
+        %
+        %                     error(i+1) = error(i) + m;
+        %                 else
+        %                     %y value is incremented (reduced)
+        %                     x(i+1) = x(i) + 1;
+        %                     y(i+1) = y(i) - 1;
+        %
+        %                     error(i+1) = error(i)+ m + 1;
+        %                 end
+        %                 pixelValues(q) = edgeBraidFreqSpectrum(y(i+1), x(i+1));
+        %                 q = q+1;
+        %             end
+        %
+        %
+        %              %str = 'SN'
+        %         end
     end
-    
+    for j = 1:size(xLine, 2)
+        pixelValues = zeros([1,size(xLine,2)]);
+        pixelValues(j) =  edgeBraidFreqSpectrum(yLine(j), xLine(j));
+    end
     %Loops through the coordinateVector obtained from generating the
     %discretized lines and determines the coresponding pixel values
     %assicoated with the x,y coordinates
     
-
-       
+    
+    
     %Defines the mean pixel intensity and the angle for each vector
     
-    intensity(count) = mean(pixelValues);    
-    directionVector = [sortedCirclePoints(j,2), sortedCirclePoints(j,1)] - [center(2), center(1)];    
+    intensity(count) = mean(pixelValues);
+    directionVector = [sortedCirclePoints(j,2), sortedCirclePoints(j,1)] - [center(2), center(1)];
     angle(count) = (180/pi)*acos(dot(ref, directionVector)/(norm(ref)*norm(directionVector)));
     
 end
@@ -345,13 +352,13 @@ braidAngle = (abs(thetaLeft)+abs(thetaRight))/2;
 % %axis(h,'equal')
 % imshow(edgeBraidFreqSpectrum, [])
 % hold on
-% 
+%
 % %for the "right" angle
 % line1 = plot([center(2), sortedCirclePoints(indRight,2)], [center(1), sortedCirclePoints(indRight,1)], 'r');
-% 
+%
 % %for the "left" angle
 % line2 = plot([center(2), sortedCirclePoints(indLeft,2)], [center(1), sortedCirclePoints(indLeft,1)], 'r');
-% 
+%
 % %line3 = plot([nRow,center(1)],  [center(2), center(1)]);
 %% finding width of peaks
 angleBand = 0.8; % the percentage that the peak intensity must decrease before the directions are not included in the angular span
@@ -359,14 +366,14 @@ angleBand = 0.8; % the percentage that the peak intensity must decrease before t
 % Angular distribution of the Left braid angle
 for j = indLeft:size(intensity, 2)/2
     if intensity(j)-min(intensity)<= (intensityLeft-min(intensity))*angleBand %uses the normalized values of intensity in this calculation
-        leftBand(1) = -1*angle(j); 
+        leftBand(1) = -1*angle(j);
         break
     end
 end
 
 % for j = indLeft:-1:1
 %    if intensity(j)-min(intensity)<= (intensityLeft-min(intensity))*angleBand
-%        leftBand(2) = -1*angle(j); 
+%        leftBand(2) = -1*angle(j);
 %        break
 %    end
 % end
@@ -377,16 +384,16 @@ leftAngleDistribution = abs(abs(leftBand(1))-abs(thetaLeft));
 %Angular distribution of the right braid angle
 % for j = indRight:size(intensity, 2)
 %     if intensity(j)-min(intensity)<= (intensityRight-min(intensity))*angleBand
-%         rightBand(1) = angle(j); 
+%         rightBand(1) = angle(j);
 %         break
 %     end
 % end
 
 for j = indRight:-1:size(intensity, 2)/2
-   if intensity(j)-min(intensity)<= (intensityRight-min(intensity))*angleBand
-       rightBand(1) = angle(j); 
-       break
-   end
+    if intensity(j)-min(intensity)<= (intensityRight-min(intensity))*angleBand
+        rightBand(1) = angle(j);
+        break
+    end
 end
 
 
