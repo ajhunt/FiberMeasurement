@@ -1,11 +1,14 @@
-function [ unwrapIm] = surfaceunwrapfunction( im, leftBoundary, rightBoundary, centerLine, maxAngle )
+function [ unwrapIm, cropIm] = surfaceunwrapfunction( im, leftBoundary, rightBoundary, centerLine, maxAngle )
 %applied orthographic projection to images of the tubular braid surface
 
 %inputs: im = input image, leftBoundary, rightBoundary, centerLine =
 %feature locations in image, braidDiameter = mandrel diameter of braid in
 %either mm or inches, unit = 0 for imperial, 1 for metric
 %maxAngle = maximum circumferential angle that is unwrapped - if this value
-%is too large (>65 degrees) resulting image is becomes distorted.  
+%is too large (>65 degrees) resulting image is becomes distorted. 
+
+%outputs: cropIm = cropped region of image.  This image represents a
+%"wrapped" version of the unwrapped image
 
 braidDiameterPX = round(rightBoundary) - round(leftBoundary);  %braid diameter in pixels
 braidRadiusPX = round(braidDiameterPX/2);
@@ -13,7 +16,7 @@ braidRadiusPX = round(braidDiameterPX/2);
 
 im(:,(1:leftBoundary)) = 0;
 im(:,(rightBoundary:sizeX)) = 0;
-imCrop = im(:, (leftBoundary:rightBoundary)); %removing background regions of image
+
 
 i = centerLine+1;
 padSize = 1000;
@@ -29,6 +32,14 @@ for i = 1:braidRadiusPX
         continue
     end
 end
+
+% crop image
+rect(1) = centerLine - maxInd; % xmin
+rect(2) = 1; %ymin
+rect(3) = 2*maxInd;
+rect(4) = sizeY;
+cropIm = imcrop(im, rect);
+
 
 %Define the amount of unwrapping as a function of distance from centerline
 x = 1:maxInd;
