@@ -1,66 +1,34 @@
-%This function will measure the braid angle from the angular intensity
-%image produced from the image taken of the braided composite.
-%
-%To be called, the angular intensity image, Im_AngularIntensity, must be
-%supplied, which is an angular intensity spectrum obtained by performing
-%a 2-D fast fourier transform to the extracted edges of the braided
-%composite.
-%
-%Written by Alexander Hunt, ajhunt@ualberta.ca
-%Updated Nov 11, 2016
-%Fixed angle band computation and added a radius reduction input (radiusReduction) which
-%shrinks the size of the search radius of the algorithm.
-%Updated Sept 7, 2016
-%Corrected improper labelling of left and right spectral features.
-%Updated Aug 29, 2016
-%Removed intensity value normalization to allow for comparison between data
-%sets.  The plot functions will plot the uncorrected values of intensity,
-%and the peak width measurement will use the normalized value
-%Updated May 2, 2016
-%Modified segment of code which defines the angle vector.  The 0 degree
-%angle was sandwiched between two positive angles which caused repeating x
-%values.  Ensured that all x values are now unique.
-%Updated April 14th, 2015
-%Updates include defining a circle which is marched across to define the
-%angle measurement vector.  This eliminates the need to have a square
-%input and keeps the number of averaged pixels constant across the spectrum
-
-%Updated June 19th 2015
-%Updates include using the Bresenham line algorithm to trace the lines in
-%order to make measurements in the frequency spectrum image.  This is done
-%in an effort to replace the improfile.m function, which grealy increases
-%run time
-
-%Updated June 29
-%Added the angle band compatibility
-%Modified the pixel intensity result by subtracting the minimum value from
-%the array of results.  This allows better selection of the measurement
-%band
-
-%Updated July 2nd, 2015
-%Added the Bresenham circle algorithm which will properly discretize the
-%circular path over which the measurement is performed.
-
-%Updated October 30, 2015
-%Added direction vector output to allow for graphical representation of
-%measured angle on frequency domain output.  And for other potential uses.
-%Added indRight and indLeft outputs
-
-%Updated November 1, 2015
-%Added sortedCirclePoints to the output of the function to add annotations
-%to the frequency spectum
-
-%Updated January 27, 2016
-%Added contraints to angle scan region.  The reflection from the mandrel
-%when I was imaging open mesh braids caused a strong responce in the
-%horizontal direction
-%
-%Angular resolution of 0.1248 degrees for a 2058x2058 image (see excel
-%spreadsheet titled AngularResolution.xlxs
-
-
 function [intensity, directionVector, angle, thetaRight, thetaLeft, indRight, indLeft, braidAngle, rightBand, leftBand, averageAngleDistribution, sortedCirclePoints]...
     = braidanglescanBresenham_v2(edgeBraidFreqSpectrum, radiusReduction)
+%This function will measure the braid angle from the angular intensity
+%image produced from the image taken of the braided composite.
+
+%Written by Alexander Hunt, ajhunt@ualberta.ca
+%Updated Nov 11, 2016
+
+
+%%
+%OUTPUTS 
+%intensity - The average frequency domain pixel intensity measured at each
+%angular position of the search vector
+%directionVector - Coordinates of the search vector
+%angle - array of discrete measurement angles
+%thetaRight
+%thetaLeft
+% indLeft
+%indRight
+%braidAngle
+%rightBand
+%leftBand
+%averageAngleDistribution
+
+%INPUTS
+%braidFrequencyspectrum - the frequency spectrum to be measured
+%radiusReduction - parameter used to reduce the search radius of the search
+%algorithm
+%%
+
+
 % The size of the FFT angular intensity spectrum must be determined to
 % determine the center of the image and the relevant vectors for the angle
 % measurement
