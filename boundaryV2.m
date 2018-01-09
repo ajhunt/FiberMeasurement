@@ -1,6 +1,14 @@
 function [ leftBoundary, rightBoundary, centerLine, braidWidth ] = boundaryV2( bw )
 %DESCRIPTION
 %Locates braid preform from properly thresholded image, bw
+%INPUTS
+%bw = binary image
+%OUTPUTS
+%leftBoundary = int column index of left side of braid
+%rightBoundary = int column index of right side of braid
+%centerLine = int column index of center of braidWidth
+%braidWidth = int mean width of braid in image
+%%
 
 count = 1;
 yIncrement = 80;

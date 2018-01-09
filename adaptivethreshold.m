@@ -3,7 +3,12 @@ function [bw] =adaptivethreshold(IM,ws,C,tm,med)
 %This uses adaptive thresholding and median filtering to threshold the
 %braid preform from the background. A median filtering process done to
 %remove the resulting salt and pepper noise.  
-
+%
+%INPUTS
+%IM = Input image
+%ws = Window size of median filter
+%C
+%med = median filter window size 
 %Ideal settings for collected braid images:
 %ws = 40, C = 3, tm = 0, med = 11
 
@@ -21,5 +26,3 @@ bw=im2bw(sIM,0);
 %median filter to remove salt and pepper noise
 bw = medfilt2(bw, [med med]);
 end
-
-%Test comment

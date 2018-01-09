@@ -1,19 +1,16 @@
-% Change log:
-% April 19, 2016
-% Added section of code that will scale the frequency spectrum to a square.  
-% This allows non square input images to be used, namely when using the ROI cropping 
-% June 22, 2016
-% Rebuilt function in a much simpler way.  Removed useless function
-% outputs.  Added image resize size function inputs
-
-function [ scaledBraidFreqSpectrum] = frequencytransform( BraidImage,  imageScaleSize )
-%UNTITLED3 Summary of this function goes here
+function [ scaledFreqSpectrum] = frequencytransform( im,  imageScaleSize )
+%This function will perform the 2D discrete Fourier transform and rescale the output to a desired 2D size
+%INPUT
+%im = input grayscale image
+%imageScaleSize = desired output size of frequnecy transform, set to image size
+%OUTPUT
+%scaledFreqSpectrum = 2D frequency spectrum with dimensions [imageScaleSize imageScaleSize]
 %   Detailed explanation goes here
 
-[nRow, nCol] = size(BraidImage);
+[nRow, nCol] = size(im);
 
 %Performs the DFT using the fast Fourier transform algorithm
-F = fft2(double(BraidImage));
+F = fft2(double(im));
 F = abs(F);
 
 %Shifts the zero frequency components of the spectrum to the center
@@ -24,7 +21,7 @@ F = log(1+F);
 F = mat2gray(F);
 
 %Resizing the frequency spectrum to ensure that it is square
-scaledBraidFreqSpectrum = imresize(F, imageScaleSize);
+scaledFreqSpectrum = imresize(F, imageScaleSize);
 
 end
 
