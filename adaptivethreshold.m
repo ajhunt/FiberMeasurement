@@ -6,7 +6,7 @@ function [bw] =adaptivethreshold(IM,ws,C,tm,med)
 %
 %INPUTS
 %IM = Input image
-%ws = Window size of median filter
+%ws = Window size of averaging filter
 %C
 %med = median filter window size 
 %Ideal settings for collected braid images:
