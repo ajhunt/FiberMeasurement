@@ -27,3 +27,5 @@ The selection of the unwrap angle, denoted by alpha, is used to choose the regio
 See the example.m file to see the process flow
 
 Any GUI files are non-functional and under development
+ 
+realVideoBraid.m and realVideoBraidGige.m are real-time video streaming scripts that call relevant functions
